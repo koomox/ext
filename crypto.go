@@ -105,6 +105,29 @@ func EncryptFile(src, dst string, secret []byte) (err error) {
 	return nil
 }
 
+func EncryptRawToFile(dst string, buf, secret []byte) (err error) {
+	var (
+		ciphertext []byte
+		cipherData []byte
+	)
+	salt := NewNonce()
+	nonce := NewNonce()
+
+	gcm, err := NewGCM(salt, nonce, secret)
+
+	if err != nil {
+		return fmt.Errorf("EncryptRawToFile NewGCM Err:%v", err.Error())
+	}
+
+	if ciphertext, err = gcm.Encrypt(buf); err != nil {
+		return fmt.Errorf("EncryptRawToFile encode... Err:%v", err.Error())
+	}
+
+	cipherData = versionedJoin(salt, nonce, ciphertext)
+
+	return ioutil.WriteFile(dst, cipherData, 0775)
+}
+
 func EncryptFileToRaw(src string, secret []byte) ([]byte, error) {
 	var (
 		ciphertext []byte
