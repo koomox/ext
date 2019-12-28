@@ -3,8 +3,10 @@ package ext
 import (
 	"archive/tar"
 	"compress/gzip"
+	"errors"
 	"io"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -51,21 +53,56 @@ func DeCompress(tarFile, dest string) ([]string, error) {
 	return completeFile, nil
 }
 
-func createDir(name string) (err error) {
-	path := string([]rune(name)[0:strings.LastIndex(name, "/")])
-	exist, err := PathExist(path)
+func DeCompressFile(tarFile, suffix, dest string) error {
+	srcFile, err := os.Open(tarFile)
+	if err != nil {
+		return err
+	}
+	defer srcFile.Close()
+
+	gr, err := gzip.NewReader(srcFile)
+	if err != nil {
+		return err
+	}
+	defer gr.Close()
+
+	tr := tar.NewReader(gr)
+	for {
+		hdr, err := tr.Next()
+		if err != nil {
+			if err == io.EOF {
+				break
+			} else {
+				return err
+			}
+		}
+		if strings.HasSuffix(hdr.Name, suffix) {
+			fn := path.Join(dest, suffix)
+			f, err := createFile(fn)
+			if err != nil {
+				return err
+			}
+			io.Copy(f, tr)
+
+			return nil
+		}
+	}
+
+	return errors.New("decompress failed")
+}
+
+func createDir(s string) (err error) {
+	p := strings.TrimSuffix(s, "/")
+	exist, err := PathExist(p)
 	if err != nil {
 		return
 	}
 	if !exist {
-		return os.MkdirAll(path, 0755)
+		return os.MkdirAll(p, 0755)
 	}
 	return nil
 }
 
 func createFile(name string) (*os.File, error) {
-	if err := createDir(name); err != nil {
-		return nil, err
-	}
 	return os.Create(name)
 }
