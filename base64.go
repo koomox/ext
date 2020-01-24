@@ -1,6 +1,11 @@
 package ext
 
-import "encoding/base64"
+import (
+	"bytes"
+	"compress/zlib"
+	"encoding/base64"
+	"io"
+)
 
 type Encoding struct {
 	cipher []byte
@@ -9,6 +14,40 @@ type Encoding struct {
 
 func NewEncoding() *Encoding {
 	return &Encoding{}
+}
+
+func (this *Encoding)Compress(data []byte)(buf []byte, err error) {
+	var b bytes.Buffer
+	w := zlib.NewWriter(&b)
+	if _, err = w.Write(data); err != nil {
+		return
+	}
+	if err = w.Close(); err != nil {
+		return
+	}
+
+	buf = b.Bytes()
+	return
+}
+
+func (this *Encoding)DeCompress(data []byte)(buf []byte, err error) {
+	var (
+		r io.ReadCloser
+		buffer bytes.Buffer
+	)
+	b := bytes.NewReader(data)
+	if r, err = zlib.NewReader(b); err != nil {
+		return
+	}
+	if _, err = io.Copy(&buffer, r); err != nil {
+		return
+	}
+	if err = r.Close(); err != nil {
+		return
+	}
+
+	buf = buffer.Bytes()
+	return
 }
 
 func (this *Encoding)Encrypt(data, secret []byte)(buf []byte, err error) {
