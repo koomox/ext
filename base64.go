@@ -3,7 +3,8 @@ package ext
 import "encoding/base64"
 
 type Encoding struct {
-	// contains filtered or unexported fields
+	cipher []byte
+	clear []byte
 }
 
 func NewEncoding() *Encoding {
@@ -11,23 +12,17 @@ func NewEncoding() *Encoding {
 }
 
 func (this *Encoding)Encrypt(data, secret []byte)(buf []byte, err error) {
-	var (
-		cipherText []byte
-	)
-	if cipherText, err = Encrypt(data, secret); err != nil {
+	if this.cipher, err = Encrypt(data, secret); err != nil {
 		return
 	}
 
-	buf = []byte(base64.RawStdEncoding.EncodeToString(cipherText))
+	buf = []byte(base64.RawStdEncoding.EncodeToString(this.cipher))
 	return
 }
 
 func (this *Encoding)Decrypt(data, secret []byte)(buf []byte, err error) {
-	var (
-		cipherText []byte
-	)
-	if cipherText, err = base64.RawStdEncoding.DecodeString(string(data)); err != nil {
+	if this.clear, err = base64.RawStdEncoding.DecodeString(string(data)); err != nil {
 		return
 	}
-	return Decrypt(cipherText, secret)
+	return Decrypt(this.clear, secret)
 }
