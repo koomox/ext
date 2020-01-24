@@ -94,6 +94,50 @@ func (this *cryptoGCM) Encrypt(cleartext []byte) ([]byte, error) {
 	return ciphertext, nil
 }
 
+func Encrypt(buf, secret []byte) (cipher []byte, err error){
+	var (
+		gcm *cryptoGCM
+		ciphertext []byte
+	)
+	salt := NewNonce()
+	nonce := NewNonce()
+
+	if gcm, err = NewGCM(salt, nonce, secret); err != nil {
+		return
+	}
+
+	if ciphertext, err = gcm.Encrypt(buf); err != nil {
+		return
+	}
+
+	cipher = versionedJoin(salt, nonce, ciphertext)
+	return
+}
+
+func Decrypt(buf, secret []byte) (cleartext []byte, err error){
+	var (
+		gcm *cryptoGCM
+		ciphertext []byte
+		salt       []byte
+		nonce      []byte
+		version    uint32
+	)
+	if version, salt, nonce, ciphertext, err = versionedSplit(buf); err != nil {
+		return
+	}
+
+	if version != versionCrypto {
+		err = errors.New("Decrypt decode Version failed!")
+		return
+	}
+
+	if gcm, err = NewGCM(salt, nonce, secret); err != nil {
+		return
+	}
+
+	return gcm.Decrypt(ciphertext)
+}
+
 func EncryptFile(src, dst string, secret []byte) (err error) {
 	r, err := EncryptFileToRaw(src, secret)
 	if err != nil {
