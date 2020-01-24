@@ -51,7 +51,10 @@ func (this *Encoding)DeCompress(data []byte)(buf []byte, err error) {
 }
 
 func (this *Encoding)Encrypt(data, secret []byte)(buf []byte, err error) {
-	if this.cipher, err = Encrypt(data, secret); err != nil {
+	if this.cipher, err = this.Compress(data); err != nil {
+		return
+	}
+	if this.cipher, err = Encrypt(this.cipher, secret); err != nil {
 		return
 	}
 
@@ -63,5 +66,9 @@ func (this *Encoding)Decrypt(data, secret []byte)(buf []byte, err error) {
 	if this.clear, err = base64.RawStdEncoding.DecodeString(string(data)); err != nil {
 		return
 	}
-	return Decrypt(this.clear, secret)
+	if this.clear, err = Decrypt(this.clear, secret); err != nil {
+		return
+	}
+
+	return this.DeCompress(this.clear)
 }
