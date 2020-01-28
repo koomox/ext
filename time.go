@@ -6,33 +6,42 @@ const (
 	customTimeFormat = "2006-01-02 15:04:05"
 )
 
-/*
- * GetTimeNowUTC
- * @Return UTC时间的字符串时间
- */
-func TimeNowUTC() (t string, err error) {
+func TimeNowUTC() (ts string, err error) {
+	var loc *time.Location
 	tn := time.Now()
-	utc, err := time.LoadLocation("UTC")
-	if err != nil {
+	if loc, err = time.LoadLocation("UTC"); err != nil {
 		return
 	}
-	return tn.In(utc).Format(customTimeFormat), nil
+	return tn.In(loc).Format(customTimeFormat), nil
 }
 
-func TimeNowCST() (t string, err error) {
+func TimeNowCST() (ts string, err error) {
+	var loc *time.Location
 	tn := time.Now()
-	cst, err := time.LoadLocation("Asia/Shanghai")
-	if err != nil {
+	if loc, err = time.LoadLocation("Asia/Shanghai"); err != nil {
 		return
 	}
-	return tn.In(cst).Format(customTimeFormat), nil
+	return tn.In(loc).Format(customTimeFormat), nil
 }
 
-// Not Expires Return true or false
-func TimeIsNotExpires(ct string) bool {
-	t, _ := TimeNowUTC()
-	if t > ct {
-		return false // Expires
+func ParseTimeUTC(ts string) (tc time.Time, err error) {
+	var loc *time.Location
+	if loc, err = time.LoadLocation("UTC"); err != nil {
+		return
 	}
-	return true // Not Expires
+	if tc, err = time.ParseInLocation(customTimeFormat, ts, loc); err != nil {
+		return
+	}
+	return
+}
+
+func ParseTimeCST(ts string) (tc time.Time, err error) {
+	var loc *time.Location
+	if loc, err = time.LoadLocation("Asia/Shanghai"); err != nil {
+		return
+	}
+	if tc, err = time.ParseInLocation(customTimeFormat, ts, loc); err != nil {
+		return
+	}
+	return
 }
