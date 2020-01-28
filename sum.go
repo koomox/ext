@@ -28,6 +28,13 @@ func GetSHA1(s string) string {
 	return hex.EncodeToString(sum)
 }
 
+func GetSHA256(s string) string {
+	h := sha256.New()
+	io.WriteString(h, s)
+	sum := h.Sum(nil)
+	return hex.EncodeToString(sum)
+}
+
 func GetFileMD5(path string) (string, error) {
 	f, err := os.Open(path)
 	if err != nil {
