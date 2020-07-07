@@ -45,3 +45,11 @@ func ParseTimeCST(ts string) (tc time.Time, err error) {
 	}
 	return
 }
+
+func NowNanosecond() int64 {
+	return time.Now().UnixNano()
+}
+
+func DelayMillisecond(nanosecond int64) int {
+	return int((NowNanosecond() - nanosecond)/1e6)
+}
