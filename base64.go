@@ -58,12 +58,14 @@ func (this *Encoding)Encrypt(data, secret []byte)(buf []byte, err error) {
 		return
 	}
 
-	buf = []byte(base64.RawStdEncoding.EncodeToString(this.cipher))
+	buf = make([]byte, base64.RawStdEncoding.EncodedLen(len(this.cipher)))
+	base64.RawStdEncoding.Encode(buf, this.cipher)
 	return
 }
 
 func (this *Encoding)Decrypt(data, secret []byte)(buf []byte, err error) {
-	if this.clear, err = base64.RawStdEncoding.DecodeString(string(data)); err != nil {
+	this.clear = make([]byte, base64.RawStdEncoding.DecodedLen(len(data)))
+	if _, err = base64.RawStdEncoding.Decode(this.clear, data); err != nil {
 		return
 	}
 	if this.clear, err = Decrypt(this.clear, secret); err != nil {
