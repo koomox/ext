@@ -25,6 +25,9 @@ func GetSuffixDomain(s string) string {
 			}
 		}
 	}
+	if count == 0 {
+		return ""
+	}
 
 	return s
 }
@@ -54,6 +57,9 @@ func GetKeywordDomain(s string) string {
 			}
 		}
 	}
+	if count == 0 {
+		return ""
+	}
 
 	return s[i:end]
 }
@@ -64,6 +70,9 @@ func GetCountryDomain(s string) string {
 		if s[i-1] == '.' {
 			break
 		}
+	}
+	if i == 0 {
+		return ""
 	}
 	return s[i:]
 }
