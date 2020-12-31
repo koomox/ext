@@ -15,7 +15,7 @@ func GetSuffixDomain(s string) string {
 				end = i - 1
 			case 2:
 				switch s[i:end] {
-				case "com", "co":
+				case "com", "co", "gov", "edu", "org", "net":
 					end = i - 1
 				default:
 					return s[i:]
@@ -47,7 +47,7 @@ func GetKeywordDomain(s string) string {
 				end = i - 1
 			case 2:
 				switch s[i:end] {
-				case "com", "co":
+				case "com", "co", "gov", "edu", "org", "net":
 					end = i - 1
 				default:
 					return s[i:end]
