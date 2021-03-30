@@ -1,49 +1,72 @@
 package ext
 
-import "time"
+import (
+	"time"
+	"strings"
+)
 
 const (
 	customTimeFormat = "2006-01-02 15:04:05"
+	frontTimeFormat = "2006-01-02T15:04:05Z"
+	browserTimeFormat   = "2006/01/02 15:04"
 )
 
-func TimeNowUTC() (ts string, err error) {
-	var loc *time.Location
-	tn := time.Now()
-	if loc, err = time.LoadLocation("UTC"); err != nil {
-		return
-	}
-	return tn.In(loc).Format(customTimeFormat), nil
+type DateTime struct {
+	Location *time.Location
+	datetime string
+	Time time.Time
 }
 
-func TimeNowCST() (ts string, err error) {
-	var loc *time.Location
-	tn := time.Now()
-	if loc, err = time.LoadLocation("Asia/Shanghai"); err != nil {
-		return
+func NewDateTime(datetime string) *DateTime {
+	dt := &DateTime{datetime: datetime,}
+	if dt.datetime == "" {
+		dt.Time = time.Now()
+		dt.Location, _ = time.LoadLocation("UTC")
+		dt.datetime = dt.Time.In(dt.Location).Format(customTimeFormat)
 	}
-	return tn.In(loc).Format(customTimeFormat), nil
+
+	return dt
 }
 
-func ParseTimeUTC(ts string) (tc time.Time, err error) {
-	var loc *time.Location
-	if loc, err = time.LoadLocation("UTC"); err != nil {
-		return
-	}
-	if tc, err = time.ParseInLocation(customTimeFormat, ts, loc); err != nil {
-		return
-	}
-	return
+func (dt *DateTime)Now() *DateTime {
+	dt.Time = time.Now()
+	return dt
 }
 
-func ParseTimeCST(ts string) (tc time.Time, err error) {
-	var loc *time.Location
-	if loc, err = time.LoadLocation("Asia/Shanghai"); err != nil {
-		return
+func (dt *DateTime)UTC() *DateTime {
+	dt.Location, _ = time.LoadLocation("UTC")
+	return dt
+}
+
+func (dt *DateTime)CST() *DateTime {
+	dt.Location, _ = time.LoadLocation("Asia/Shanghai")
+	return dt
+}
+
+func (dt *DateTime)ParseTime() (*DateTime, error) {
+	var err error
+	if strings.Contains(dt.datetime, "/") {
+		dt.Time, err = time.ParseInLocation(browserTimeFormat, dt.datetime, dt.Location)
+		return dt, err
 	}
-	if tc, err = time.ParseInLocation(customTimeFormat, ts, loc); err != nil {
-		return
+	if strings.Contains(dt.datetime, "Z") {
+		dt.Time, err = time.ParseInLocation(frontTimeFormat, dt.datetime, dt.Location)
+		return dt, err
 	}
-	return
+	if strings.Contains(dt.datetime, "-") {
+		dt.Time, err = time.ParseInLocation(customTimeFormat, dt.datetime, dt.Location)
+		return dt, err
+	}
+	err = errors.New("parse time failed!")
+	return dt, err
+}
+
+func (dt *DateTime)String() string {
+	return dt.Time.In(dt.Location).Format(customTimeFormat)
+}
+
+func (dt *DateTime)Before(u *DateTime) bool {
+	return dt.Time.Before(u.Time)
 }
 
 func NowNanosecond() int64 {
