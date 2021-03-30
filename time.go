@@ -61,6 +61,11 @@ func (dt *DateTime)ParseTime() (*DateTime, error) {
 	return dt, err
 }
 
+func (dt *DateTime)Parse() *DateTime {
+	dt.Time, _ = time.ParseInLocation(customTimeFormat, dt.datetime, dt.Location)
+	return dt
+}
+
 func (dt *DateTime)String() string {
 	return dt.Time.In(dt.Location).Format(customTimeFormat)
 }
