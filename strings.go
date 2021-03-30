@@ -76,3 +76,36 @@ func GetCountryDomain(s string) string {
 	}
 	return s[i:]
 }
+
+func GetFilextension(s string) string {
+	i := len(s)
+	for ; i != 0; i-- {
+		if s[i-1] == '.' {
+			break
+		}
+	}
+	if i == 0 {
+		return ""
+	}
+	return s[i:]
+}
+
+func GetFilename(s string) string {
+	i := len(s)
+	d := i
+	for ; i != 0; i-- {
+		if s[i-1] == '?' {
+			d = i - 1
+			break
+		}
+	}
+	if i == 0 {
+		i = d
+	}
+	for ; i != 0; i-- {
+		if s[i-1] == '/' {
+			break
+		}
+	}
+	return s[i:d]
+}
