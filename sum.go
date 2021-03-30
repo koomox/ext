@@ -11,31 +11,31 @@ import (
 )
 
 func GenPassword(pwd string) string {
-	return GetMD5(GetSHA1(pwd))
+	return MD5sum(SHA1sum(pwd))
 }
 
-func GetMD5(ctx string) string {
+func MD5sum(ctx string) string {
 	h := md5.New()
 	io.WriteString(h, ctx)
 	sum := h.Sum(nil)
 	return hex.EncodeToString(sum)
 }
 
-func GetSHA1(s string) string {
+func SHA1sum(s string) string {
 	h := sha1.New()
 	io.WriteString(h, s)
 	sum := h.Sum(nil)
 	return hex.EncodeToString(sum)
 }
 
-func GetSHA256(s string) string {
+func SHA256sum(s string) string {
 	h := sha256.New()
 	io.WriteString(h, s)
 	sum := h.Sum(nil)
 	return hex.EncodeToString(sum)
 }
 
-func GetFileMD5(path string) (string, error) {
+func FileMD5sum(path string) (string, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return "", fmt.Errorf("GetFileMD5 OpenFile Err:%v", err.Error())
@@ -51,7 +51,7 @@ func GetFileMD5(path string) (string, error) {
 	return hex.EncodeToString(sum), nil
 }
 
-func GetFileSHA256(path string) (string, error) {
+func FileSHA256sum(path string) (string, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return "", fmt.Errorf("GetFileSHA256 Open File Err:%v", err.Error())
