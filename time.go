@@ -3,6 +3,7 @@ package ext
 import (
 	"time"
 	"strings"
+	"errors"
 )
 
 const (
