@@ -1,5 +1,18 @@
 package ext
 
+import (
+	"strconv"
+)
+
+func Atoi(s string) (n int) {
+	n, _ = strconv.Atoi(s)
+	return
+}
+
+func Itoa(i int) string {
+	return strconv.Itoa(i)
+}
+
 func GetSuffixDomain(s string) string {
 	i := len(s)
 	count := 0
