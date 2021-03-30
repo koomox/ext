@@ -74,6 +74,10 @@ func (dt *DateTime)Before(u *DateTime) bool {
 	return dt.Time.Before(u.Time)
 }
 
+func (dt *DateTime)Sub(u *DateTime) time.Duration {
+	return dt.Time.Sub(u.Time)
+}
+
 func NowNanosecond() int64 {
 	return time.Now().UnixNano()
 }
