@@ -1,11 +1,6 @@
 # ext
 Extensions Libs
 
-```sh
-go get -u -d golang.org/x/crypto
-go get -u -d github.com/koomox/ext
-```
-
 ### Use         
 ```go
 package main
