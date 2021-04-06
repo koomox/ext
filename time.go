@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	dateTimeFormat = "2006-01-02"
 	customTimeFormat = "2006-01-02 15:04:05"
 	frontTimeFormat = "2006-01-02T15:04:05Z"
 	browserTimeFormat   = "2006/01/02 15:04"
@@ -69,6 +70,10 @@ func (dt *DateTime)Parse() *DateTime {
 
 func (dt *DateTime)String() string {
 	return dt.Time.In(dt.Location).Format(customTimeFormat)
+}
+
+func (dt *DateTime)DateString() string {
+	return dt.Time.In(dt.Location).Format(dateTimeFormat)
 }
 
 func (dt *DateTime)Before(u *DateTime) bool {
