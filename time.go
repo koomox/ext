@@ -68,6 +68,10 @@ func (dt *DateTime)Parse() *DateTime {
 	return dt
 }
 
+func (dt *DateTime)Format(layout string) string {
+	return dt.Time.In(dt.Location).Format(layout)
+}
+
 func (dt *DateTime)String() string {
 	return dt.Time.In(dt.Location).Format(customTimeFormat)
 }
