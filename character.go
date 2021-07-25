@@ -8,24 +8,33 @@ var (
 	}
 )
 
-func IsUpper(ch rune) bool {
-	if ch >= 'A' && ch <= 'Z' {
+const (
+	alphabetA byte = byte('A')
+	alphabetZ byte = byte('Z')
+	alphabeta byte = byte('a')
+	alphabetz byte = byte('z')
+	numeric0 byte = byte('0')
+	numeric9 byte = byte('9')
+)
+
+func IsUpper(ch byte) bool {
+	if ch >= alphabetA && ch <= alphabetZ {
 		return true
 	}
 
 	return false
 }
 
-func IsLower(ch rune) bool {
-	if ch >= 'a' && ch <= 'z' {
+func IsLower(ch byte) bool {
+	if ch >= alphabeta && ch <= alphabetz {
 		return true
 	}
 
 	return false
 }
 
-func IsNumber(ch rune) bool {
-	if ch >= '0' && ch <= '9' {
+func IsNumber(ch byte) bool {
+	if ch >= numeric0 && ch <= numeric9 {
 		return true
 	}
 
@@ -42,11 +51,11 @@ func IsSymbol(ch rune) bool {
 	return false
 }
 
-func IsAlphabet(ch rune) bool {
-	if ch >= 'A' && ch <= 'Z' {
+func IsAlphabet(ch byte) bool {
+	if ch >= alphabetA && ch <= alphabetZ {
 		return true
 	}
-	if ch >= 'a' && ch <= 'z' {
+	if ch >= alphabeta && ch <= alphabetz {
 		return true
 	}
 

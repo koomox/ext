@@ -61,7 +61,7 @@ func (dt *DateTime)parser() (*DateTime, error) {
 		if length <= 0 {
 			break
 		}
-		if !IsNumber(rune(dt.datetime[offset])) {
+		if !IsNumber(byte(dt.datetime[offset])) {
 			offset++
 			length--
 		}
@@ -70,7 +70,7 @@ func (dt *DateTime)parser() (*DateTime, error) {
 		}
 		timeArray[i] = dt.datetime[offset: offset+timeOffset[i]]
 		for _, v := range timeArray[i] {
-			if !IsNumber(v) {
+			if !IsNumber(byte(v)) {
 				err = errors.New("date time is bad format string")
 				return dt, err
 			}
