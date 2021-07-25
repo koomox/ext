@@ -24,16 +24,9 @@ func IsLower(ch rune) bool {
 	return false
 }
 
-func IsNumber(ch interface{}) bool {
-	switch ch.(type) {
-	case rune:
-		if ch.(rune) >=  && ch.(rune) <= '9' {
-			return true
-		}
-	case byte:
-		if rune(ch.(byte)) >= '0' && rune(ch.(byte)) <= '9' {
-			return true
-		}
+func IsNumber(ch rune) bool {
+	if ch >= '0' && ch <= '9' {
+		return true
 	}
 
 	return false

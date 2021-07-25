@@ -61,7 +61,7 @@ func (dt *DateTime)parser() (*DateTime, error) {
 		if length <= 0 {
 			break
 		}
-		if !IsNumber(dt.datetime[offset]) {
+		if !IsNumber(rune(dt.datetime[offset])) {
 			offset++
 			length--
 		}
