@@ -69,20 +69,16 @@ func (dt *DateTime)parser() (*DateTime, error) {
 			break
 		}
 		timeArray[i] = dt.datetime[offset: offset+timeOffset[i]]
+		for _, v := range timeArray[i] {
+			if !IsNumber(v) {
+				err = errors.New("date time is bad format string")
+				return dt, err
+			}
+		}
 		offset += timeOffset[i]
 		length -= timeOffset[i]
 	}
-
-	ch := strings.Join(timeArray, "")
-	for _, v := range ch {
-		if !IsNumber(v) {
-			err = errors.New("date time is bad format string")
-			return dt, err
-		}
-		if v == '0' {
-			length--
-		}
-	}
+	
 	if timeArray[0] == "0000" || timeArray[1] == "00" || timeArray[2] == "00" {
 		err = errors.New("date time is bad format string")
 		return dt, err
