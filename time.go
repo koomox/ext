@@ -48,64 +48,51 @@ func (dt *DateTime)CST() *DateTime {
 func (dt *DateTime)parser() (*DateTime, error) {
 	var (
 		err error
-		year = ""
-		month = ""
-		day = ""
-		hour = "00"
-		minute = "00"
-		second = "00"
 	)
+	timeArray := []string{"0000", "00", "00", "00", "00", "00"}
+	timeOffset := []int{4, 2, 2, 2, 2, 2}
 	length := len(dt.datetime)
-	if dt.datetime == "" || length < 8 {
-		err = errors.New("parse date time failed")
+	if dt.datetime == "" {
+		err = errors.New("date time is null")
 		return dt, err
 	}
-	offset := 4
-	year = dt.datetime[:offset]
-	if !IsNumber(dt.datetime[offset]) {
-		offset += 1
-	}
-	month = dt.datetime[offset:offset+2]
-	offset += 2
-	if !IsNumber(dt.datetime[offset]) {
-		offset += 1
-	}
-	day = dt.datetime[offset:offset+2]
-	offset += 2
-	if length >= 16 {
-		offset += 1
-		hour = dt.datetime[offset:offset+2]
-		offset += 2
-		if !IsNumber(dt.datetime[offset]) {
-			offset += 1
+	offset := 0
+	for i := 0; i < len(timeArray); i++ {
+		if length <= 0 {
+			break
 		}
-		minute = dt.datetime[offset:offset+2]
-		offset += 2
-	}
-	if length >= 18 {
 		if !IsNumber(dt.datetime[offset]) {
-			offset += 1
+			offset++
+			length--
 		}
-		second = dt.datetime[offset:offset+2]
+		if length < timeOffset[i] {
+			break
+		}
+		timeArray[i] = dt.datetime[offset: offset+timeOffset[i]]
+		offset += timeOffset[i]
+		length -= timeOffset[i]
 	}
 
-
-	ch := strings.Join([]string{year, month, day, hour, minute, second}, "")
-	length = len(ch)
+	ch := strings.Join(timeArray, "")
 	for _, v := range ch {
 		if !IsNumber(v) {
-			err = errors.New("parse date time failed")
+			err = errors.New("date time is bad format string")
 			return dt, err
 		}
 		if v == '0' {
 			length--
 		}
 	}
-	if length == 0 {
-		err = errors.New("parse date time failed")
+	if timeArray[0] == "0000" || timeArray[1] == "00" || timeArray[2] == "00" {
+		err = errors.New("date time is bad format string")
 		return dt, err
 	}
-	dt.datetime = fmt.Sprintf("%v-%v-%v %v:%v:%v", year, month, day, hour, minute, second)
+	if timeArray[0] == "0001" && timeArray[1] == "01" && timeArray[2] == "01" {
+		err = errors.New("date time is bad format string")
+		return dt, err
+	}
+	
+	dt.datetime = fmt.Sprintf("%v-%v-%v %v:%v:%v", timeArray[0], timeArray[1], timeArray[2], timeArray[3], timeArray[4], timeArray[5])
 
 	return dt, err
 }
