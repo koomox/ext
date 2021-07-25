@@ -47,6 +47,7 @@ func (dt *DateTime)CST() *DateTime {
 }
 
 func (dt *DateTime)parser() (*DateTime, error) {
+	var err error
 	timeArray := []string{"0000", "00", "00", "00", "00", "00"}
 	timeOffset := []int{4, 2, 2, 2, 2, 2}
 	length := len(dt.datetime)
@@ -83,8 +84,8 @@ func (dt *DateTime)parser() (*DateTime, error) {
 	}
 	
 	dt.datetime = fmt.Sprintf("%v-%v-%v %v:%v:%v", timeArray[0], timeArray[1], timeArray[2], timeArray[3], timeArray[4], timeArray[5])
-
-	return dt, nil
+	dt.Time, err = time.ParseInLocation(customTimeFormat, dt.datetime, dt.Location)
+	return dt, err
 }
 
 func (dt *DateTime)ParseTime() (*DateTime, error) {
