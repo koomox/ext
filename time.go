@@ -20,7 +20,7 @@ type DateTime struct {
 }
 
 func NewDateTime(datetime string) *DateTime {
-	dt := &DateTime{datetime: datetime,}
+	dt := &DateTime{datetime: strings.Trim(datetime, " "),}
 	if dt.datetime == "" {
 		dt.Time = time.Now()
 		dt.Location, _ = time.LoadLocation("UTC")
@@ -45,22 +45,73 @@ func (dt *DateTime)CST() *DateTime {
 	return dt
 }
 
-func (dt *DateTime)ParseTime() (*DateTime, error) {
-	var err error
-	if strings.Contains(dt.datetime, "/") {
-		dt.Time, err = time.ParseInLocation(browserTimeFormat, dt.datetime, dt.Location)
+func (dt *DateTime)parser() (*DateTime, error) {
+	var (
+		err error
+		year = ""
+		month = ""
+		day = ""
+		hour = "00"
+		minute = "00"
+		second = "00"
+	)
+	length := len(dt.datetime)
+	if dt.datetime == "" || length < 8 {
+		err = errors.New("parse date time failed")
 		return dt, err
 	}
-	if strings.Contains(dt.datetime, "Z") {
-		dt.Time, err = time.ParseInLocation(frontTimeFormat, dt.datetime, dt.Location)
+	offset := 4
+	year = dt.datetime[:offset]
+	if !IsNumber(dt.datetime[offset]) {
+		offset += 1
+	}
+	month = dt.datetime[offset:offset+2]
+	offset += 2
+	if !IsNumber(dt.datetime[offset]) {
+		offset += 1
+	}
+	day = dt.datetime[offset:offset+2]
+	offset += 2
+	if length >= 16 {
+		offset += 1
+		hour = dt.datetime[offset:offset+2]
+		offset += 2
+		if !IsNumber(dt.datetime[offset]) {
+			offset += 1
+		}
+		minute = dt.datetime[offset:offset+2]
+		offset += 2
+	}
+	if length >= 18 {
+		if !IsNumber(dt.datetime[offset]) {
+			offset += 1
+		}
+		second = dt.datetime[offset:offset+2]
+	}
+
+
+	ch := strings.Join([]string{year, month, day, hour, minute, second}, "")
+	length = len(ch)
+	for _, v := range ch {
+		if !IsNumber(v) {
+			err = errors.New("parse date time failed")
+			return dt, err
+		}
+		if v == '0' {
+			length--
+		}
+	}
+	if length == 0 {
+		err = errors.New("parse date time failed")
 		return dt, err
 	}
-	if strings.Contains(dt.datetime, "-") {
-		dt.Time, err = time.ParseInLocation(customTimeFormat, dt.datetime, dt.Location)
-		return dt, err
-	}
-	err = errors.New("parse time failed!")
+	dt.datetime = fmt.Sprintf("%v-%v-%v %v:%v:%v", year, month, day, hour, minute, second)
+
 	return dt, err
+}
+
+func (dt *DateTime)ParseTime() (*DateTime, error) {
+	return dt.parser()
 }
 
 func (dt *DateTime)Parse() *DateTime {
