@@ -47,15 +47,11 @@ func (dt *DateTime)CST() *DateTime {
 }
 
 func (dt *DateTime)parser() (*DateTime, error) {
-	var (
-		err error
-	)
 	timeArray := []string{"0000", "00", "00", "00", "00", "00"}
 	timeOffset := []int{4, 2, 2, 2, 2, 2}
 	length := len(dt.datetime)
 	if dt.datetime == "" {
-		err = errors.New("date time is null")
-		return dt, err
+		return dt, errors.New("date time is null")
 	}
 	offset := 0
 	for i := 0; i < len(timeArray); i++ {
@@ -72,8 +68,7 @@ func (dt *DateTime)parser() (*DateTime, error) {
 		timeArray[i] = dt.datetime[offset: offset+timeOffset[i]]
 		for _, v := range timeArray[i] {
 			if !IsNumber(byte(v)) {
-				err = errors.New("date time is bad format string")
-				return dt, err
+				return dt, errors.New("date time is bad format string")
 			}
 		}
 		offset += timeOffset[i]
@@ -81,17 +76,15 @@ func (dt *DateTime)parser() (*DateTime, error) {
 	}
 	
 	if timeArray[0] == "0000" || timeArray[1] == "00" || timeArray[2] == "00" {
-		err = errors.New("date time is bad format string")
-		return dt, err
+		return dt, errors.New("date time is bad format string")
 	}
 	if timeArray[0] == "0001" && timeArray[1] == "01" && timeArray[2] == "01" {
-		err = errors.New("date time is bad format string")
-		return dt, err
+		return dt, errors.New("date time is bad format string")
 	}
 	
 	dt.datetime = fmt.Sprintf("%v-%v-%v %v:%v:%v", timeArray[0], timeArray[1], timeArray[2], timeArray[3], timeArray[4], timeArray[5])
 
-	return dt, err
+	return dt, nil
 }
 
 func (dt *DateTime)ParseTime() (*DateTime, error) {
