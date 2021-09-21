@@ -1,8 +1,16 @@
 package ext
 
 import (
+	"reflect"
 	"strconv"
 )
+
+func IsNil(i interface{}) bool {
+	defer func() {
+		recover()
+	}()
+	return i == nil || reflect.ValueOf(i).IsNil()
+}
 
 func Atoi(s string) (n int) {
 	n, _ = strconv.Atoi(s)
