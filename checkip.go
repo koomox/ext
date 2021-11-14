@@ -9,6 +9,7 @@ import (
 var (
 	akamaiCheckIPURI = "http://whatismyip.akamai.com/"
 	amazonCheckIPURI = "https://checkip.amazonaws.com/"
+	// orayCheckIPURI = "https://ddns.oray.com/checkip"
 )
 
 func HttpGetPublicIPAddr(uri string) (string, error) {
