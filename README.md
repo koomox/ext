@@ -28,7 +28,7 @@ func main() {
 	}
 	fmt.Printf("RandomSecurePassword(\"%v\")\n", r)
 	
-	fmt.Printf("str=\"%v\" MD5=\"%v\"\n", r, ext.GetMD5(r))
+	fmt.Printf("str=\"%v\" MD5=\"%v\"\n", r, ext.MD5sum(r))
 
 	if fs, err = ext.GetCustomDirectoryAllFile(""); err != nil {
 		fmt.Printf("Err:%v", err.Error())
@@ -39,7 +39,7 @@ func main() {
 		fmt.Println(f)
 	}
 
-	t, _ := ext.TimeNowCST()
-	fmt.Println(t)
+
+	fmt.Println(ext.NewDateTime("").String())
 }
 ```
