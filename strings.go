@@ -6,9 +6,12 @@ import (
 	"strconv"
 )
 
+var (
+	uuidExpCompile = regexp.MustCompile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$")
+)
+
 func IsValidUUID(uuid string) bool {
-	r := regexp.MustCompile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$")
-	return r.MatchString(uuid)
+	return uuidExpCompile.MatchString(uuid)
 }
 
 func IsNil(i interface{}) bool {
@@ -27,7 +30,7 @@ func Itoa(i int) string {
 	return strconv.Itoa(i)
 }
 
-func GetSuffixDomain(s string) string {
+func DomainSuffix(s string) string {
 	i := len(s)
 	count := 0
 	end := 0
@@ -59,7 +62,7 @@ func GetSuffixDomain(s string) string {
 	return s
 }
 
-func GetKeywordDomain(s string) string {
+func DomainKeyword(s string) string {
 	i := len(s)
 	count := 0
 	end := i
@@ -91,7 +94,7 @@ func GetKeywordDomain(s string) string {
 	return s[i:end]
 }
 
-func GetCountryDomain(s string) string {
+func DomainCountry(s string) string {
 	i := len(s)
 	for ; i != 0; i-- {
 		if s[i-1] == '.' {
@@ -104,7 +107,7 @@ func GetCountryDomain(s string) string {
 	return s[i:]
 }
 
-func GetFilextension(s string) string {
+func Filextension(s string) string {
 	i := len(s)
 	for ; i != 0; i-- {
 		if s[i-1] == '.' {
@@ -117,7 +120,7 @@ func GetFilextension(s string) string {
 	return s[i:]
 }
 
-func GetFilename(s string) string {
+func Filename(s string) string {
 	i := len(s)
 	d := i
 	for ; i != 0; i-- {

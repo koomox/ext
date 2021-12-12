@@ -23,17 +23,6 @@ func IsExistsPath(p string) bool {
 	return true
 }
 
-// is Dir And file Exists Return true
-func PathExist(path string) (bool, error) {
-	if _, err := os.Stat(path); err != nil {
-		if os.IsNotExist(err) {
-			return false, nil
-		}
-		return false, err
-	}
-	return true, nil
-}
-
 func GetCurrentDirectory() (string, error) {
 	return currentDirectory()
 }
