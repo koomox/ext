@@ -15,6 +15,14 @@ const (
 	rawFileNameLength = 32
 )
 
+// IsExistsPath check path exist
+func IsExistsPath(p string) bool {
+	if _, err := os.Stat(p); err != nil {
+		return os.IsExist(err)
+	}
+	return true
+}
+
 // is Dir And file Exists Return true
 func PathExist(path string) (bool, error) {
 	if _, err := os.Stat(path); err != nil {
