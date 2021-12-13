@@ -93,11 +93,7 @@ func DeCompressFile(tarFile, suffix, dest string) error {
 
 func createDir(s string) (err error) {
 	p := strings.TrimSuffix(s, "/")
-	exist, err := PathExist(p)
-	if err != nil {
-		return
-	}
-	if !exist {
+	if ok := IsExistsPath(p); !ok {
 		return os.MkdirAll(p, 0755)
 	}
 	return nil

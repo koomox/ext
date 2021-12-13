@@ -118,8 +118,7 @@ func GeneratorRawFileNameUnique(path string) (string, error) {
 			return "", err
 		}
 		fn := path + "/" + f
-		exist, err := PathExist(fn)
-		if err != nil || exist {
+		if IsExistsPath(fn) {
 			continue
 		}
 		return f, nil

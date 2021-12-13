@@ -188,8 +188,8 @@ func EncryptFileToRaw(src string, secret []byte) ([]byte, error) {
 		return nil, fmt.Errorf("EncrytFileToRaw NewGCM Err:%v", err.Error())
 	}
 
-	exist, err := PathExist(src)
-	if !exist || err != nil {
+	
+	if ok := IsExistsPath(src); !ok {
 		return nil, fmt.Errorf("EncrytFileToRaw Not Found input file Err:%v", err.Error())
 	}
 
@@ -227,8 +227,8 @@ func DecryptFileToRaw(src string, secret []byte) ([]byte, error) {
 		version    uint32
 	)
 
-	exist, err := PathExist(src)
-	if !exist || err != nil {
+	
+	if ok := IsExistsPath(src); !ok {
 		return nil, fmt.Errorf("DecryptFileToRaw Not Found input file Err:%v", err.Error())
 	}
 
