@@ -124,3 +124,7 @@ func NowNanosecond() int64 {
 func DelayMillisecond(nanosecond int64) int {
 	return int((NowNanosecond() - nanosecond)/1e6)
 }
+
+func Timestamp() int64 {
+	return time.Now().Unix()
+}
