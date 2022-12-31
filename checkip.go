@@ -11,9 +11,9 @@ import (
 )
 
 var (
-	akamaiCheckIPURI = "http://whatismyip.akamai.com/"
-	amazonCheckIPURI = "https://checkip.amazonaws.com/"
-	// orayCheckIPURI = "https://ddns.oray.com/checkip"
+	AkamaiCheckIPURL = "http://whatismyip.akamai.com/"
+	AmazonCheckIPURL = "https://checkip.amazonaws.com/"
+	OrayCheckIPURL   = "https://ddns.oray.com/checkip"
 )
 
 func GetPublicIPAddr(host ...string) (addr string, err error) {
