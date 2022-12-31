@@ -21,8 +21,8 @@ func GetPublicIPAddr(host ...string) (addr string, err error) {
 	ch := make(chan string)
 	host = append(host, akamaiCheckIPURL, amazonCheckIPURL)
 	for i := range host {
-		go func(ctx context.Context, reqURL string) {
-			req, err := http.NewRequest(http.MethodGet, reqURL, nil)
+		go func(ctx context.Context, resource string) {
+			req, err := http.NewRequest(http.MethodGet, resource, nil)
 			if err != nil {
 				return
 			}
