@@ -7,10 +7,10 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"golang.org/x/crypto/scrypt"
 	"io"
-	"io/ioutil"
 	"os"
+
+	"golang.org/x/crypto/scrypt"
 )
 
 const (
@@ -94,9 +94,9 @@ func (this *cryptoGCM) Encrypt(cleartext []byte) ([]byte, error) {
 	return ciphertext, nil
 }
 
-func Encrypt(buf, secret []byte) (cipher []byte, err error){
+func Encrypt(buf, secret []byte) (cipher []byte, err error) {
 	var (
-		gcm *cryptoGCM
+		gcm        *cryptoGCM
 		ciphertext []byte
 	)
 	salt := NewNonce()
@@ -114,9 +114,9 @@ func Encrypt(buf, secret []byte) (cipher []byte, err error){
 	return
 }
 
-func Decrypt(buf, secret []byte) (cleartext []byte, err error){
+func Decrypt(buf, secret []byte) (cleartext []byte, err error) {
 	var (
-		gcm *cryptoGCM
+		gcm        *cryptoGCM
 		ciphertext []byte
 		salt       []byte
 		nonce      []byte
@@ -143,7 +143,7 @@ func EncryptFile(src, dst string, secret []byte) (err error) {
 	if err != nil {
 		return err
 	}
-	if err := ioutil.WriteFile(dst, r, 0775); err != nil {
+	if err := os.WriteFile(dst, r, os.ModePerm); err != nil {
 		return fmt.Errorf("EncrytFile write DestFile Err:%v", err.Error())
 	}
 	return nil
@@ -169,7 +169,7 @@ func EncryptRawToFile(dst string, buf, secret []byte) (err error) {
 
 	cipherData = versionedJoin(salt, nonce, ciphertext)
 
-	return ioutil.WriteFile(dst, cipherData, 0775)
+	return os.WriteFile(dst, cipherData, os.ModePerm)
 }
 
 func EncryptFileToRaw(src string, secret []byte) ([]byte, error) {
@@ -188,12 +188,11 @@ func EncryptFileToRaw(src string, secret []byte) ([]byte, error) {
 		return nil, fmt.Errorf("EncrytFileToRaw NewGCM Err:%v", err.Error())
 	}
 
-	
 	if ok := IsExistsPath(src); !ok {
 		return nil, fmt.Errorf("EncrytFileToRaw Not Found input file Err:%v", err.Error())
 	}
 
-	if clearData, err = ioutil.ReadFile(src); err != nil {
+	if clearData, err = os.ReadFile(src); err != nil {
 		return nil, fmt.Errorf("EncrytFileToRaw ReadFile Err:%v", err.Error())
 	}
 
@@ -210,7 +209,7 @@ func DecryptFile(src, dst string, secret []byte) (err error) {
 	if err != nil {
 		return err
 	}
-	if err := ioutil.WriteFile(dst, r, 0775); err != nil {
+	if err := os.WriteFile(dst, r, os.ModePerm); err != nil {
 		return fmt.Errorf("DecryptFile write DestFile Err:%v", err.Error())
 	}
 	return nil
@@ -227,12 +226,11 @@ func DecryptFileToRaw(src string, secret []byte) ([]byte, error) {
 		version    uint32
 	)
 
-	
 	if ok := IsExistsPath(src); !ok {
 		return nil, fmt.Errorf("DecryptFileToRaw Not Found input file Err:%v", err.Error())
 	}
 
-	if cipherData, err = ioutil.ReadFile(src); err != nil {
+	if cipherData, err = os.ReadFile(src); err != nil {
 		return nil, fmt.Errorf("DecryptFileToRaw ReadFile Err:%v", err.Error())
 	}
 
