@@ -1,7 +1,7 @@
 # ext
-Extensions Libs
+Golang Extensions Libs
 
-### Use         
+### Example Code         
 ```go
 package main
 
