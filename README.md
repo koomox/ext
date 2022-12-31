@@ -39,7 +39,19 @@ func main() {
 		fmt.Println(f)
 	}
 
+	addr, err := ext.GetPublicIPAddr()
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(addr)
 
-	fmt.Println(ext.NewDateTime("").String())
+	fmt.Println(ext.NewDateTime().CST().String())
+	dt, err := ext.FromDateTime("2022-12-19 01:01:01")
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(dt.CST().Parser().UTC().String())
 }
 ```
