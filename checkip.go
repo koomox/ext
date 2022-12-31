@@ -17,7 +17,6 @@ var (
 )
 
 func GetPublicIPAddr(host ...string) (addr string, err error) {
-	client := &http.Client{Timeout: 3 * time.Second}
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	ch := make(chan string)
 	for i := range host {
@@ -26,7 +25,7 @@ func GetPublicIPAddr(host ...string) (addr string, err error) {
 			if err != nil {
 				return
 			}
-			resp, err := client.Do(req.WithContext(ctx))
+			resp, err := http.DefaultClient.Do(req.WithContext(ctx))
 			if err != nil {
 				return
 			}
