@@ -5,7 +5,6 @@ import (
 	"crypto/sha1"
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"io"
 	"os"
 )
@@ -35,32 +34,32 @@ func SHA256sum(s string) string {
 	return hex.EncodeToString(sum)
 }
 
-func FileMD5sum(path string) (string, error) {
-	f, err := os.Open(path)
+func MD5sumWithFile(pa string) (string, error) {
+	f, err := os.Open(pa)
 	if err != nil {
-		return "", fmt.Errorf("GetFileMD5 OpenFile Err:%v", err.Error())
+		return "", err
 	}
 	defer f.Close()
 
 	h := md5.New()
 	if _, err := io.Copy(h, f); err != nil {
-		return "", fmt.Errorf("GetFileMD5 io.Copy Err:%v", err.Error())
+		return "", err
 	}
 
 	sum := h.Sum(nil)
 	return hex.EncodeToString(sum), nil
 }
 
-func FileSHA256sum(path string) (string, error) {
-	f, err := os.Open(path)
+func SHA256sumWithFile(pa string) (string, error) {
+	f, err := os.Open(pa)
 	if err != nil {
-		return "", fmt.Errorf("GetFileSHA256 Open File Err:%v", err.Error())
+		return "", err
 	}
 	defer f.Close()
 
 	h := sha256.New()
 	if _, err := io.Copy(h, f); err != nil {
-		return "", fmt.Errorf("GetFileSHA256 io.Copy Err:%v", err.Error())
+		return "", err
 	}
 
 	sum := h.Sum(nil)

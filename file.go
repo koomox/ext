@@ -11,15 +11,15 @@ type Reader interface {
 	ReadLine(string)
 }
 
-func FromFile(reader Reader, name string) (err error){
+func FromFile(reader Reader, name string) error {
 	f, err := os.Open(name)
 	if err != nil {
-		return
+		return err
 	}
 	defer f.Close()
 
 	buf := bufio.NewReader(f)
-	for  {
+	for {
 		line, err := buf.ReadString('\n')
 		if err != nil && err != io.EOF {
 			return err
@@ -32,5 +32,5 @@ func FromFile(reader Reader, name string) (err error){
 		}
 	}
 
-	return
+	return nil
 }
