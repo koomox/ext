@@ -6,7 +6,17 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"golang.org/x/net/proxy"
 )
+
+func NewProxyDialer(network, addr string) *http.Client {
+	dialer, _ := proxy.SOCKS5(network, addr, nil, proxy.Direct)
+	transport := &http.Transport{
+		Dial: dialer.Dial,
+	}
+	return &http.Client{Transport: transport}
+}
 
 func HttpGet(reqURL string) ([]byte, error) {
 	client := &http.Client{Timeout: 5 * time.Second}
