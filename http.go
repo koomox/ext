@@ -14,6 +14,7 @@ func HttpGet(reqURL string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -33,6 +34,7 @@ func HttpGetWithFile(reqURL, dst string) (err error) {
 	if err != nil {
 		return err
 	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36")
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
