@@ -37,12 +37,12 @@ func DeCompress(tarFile, dest string) ([]string, error) {
 		}
 		filename := dest + hdr.Name
 		if strings.HasSuffix(filename, "/") { // Dir
-			err := createDir(filename)
+			_, err := os.Create(filename)
 			if err != nil {
 				return completeFile, err
 			}
 		} else { // file
-			file, err := createFile(filename)
+			file, err := os.Create(filename)
 			if err != nil {
 				return completeFile, err
 			}
@@ -78,7 +78,7 @@ func DeCompressFile(tarFile, suffix, dest string) error {
 		}
 		if strings.HasSuffix(hdr.Name, suffix) {
 			fn := path.Join(dest, suffix)
-			f, err := createFile(fn)
+			f, err := os.Create(fn)
 			if err != nil {
 				return err
 			}
@@ -91,14 +91,10 @@ func DeCompressFile(tarFile, suffix, dest string) error {
 	return errors.New("decompress failed")
 }
 
-func createDir(s string) (err error) {
-	p := strings.TrimSuffix(s, "/")
-	if ok := IsExistsPath(p); !ok {
-		return os.MkdirAll(p, 0755)
+func MkdirAll(pa string) (err error) {
+	pa = strings.TrimSuffix(pa, "/")
+	if ok := IsExistsPath(pa); !ok {
+		return os.MkdirAll(pa, os.ModePerm)
 	}
 	return nil
-}
-
-func createFile(name string) (*os.File, error) {
-	return os.Create(name)
 }

@@ -16,8 +16,8 @@ const (
 )
 
 // IsExistsPath check path exist
-func IsExistsPath(p string) bool {
-	if _, err := os.Stat(p); err != nil {
+func IsExistsPath(pa string) bool {
+	if _, err := os.Stat(pa); err != nil {
 		return os.IsExist(err)
 	}
 	return true
