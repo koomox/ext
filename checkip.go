@@ -18,10 +18,10 @@ var (
 
 func GetPublicIPAddr(host ...string) (addr string, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	ch := make(chan string)
+	ch := make(chan string, 1)
 	host = append(host, akamaiCheckIPURL, amazonCheckIPURL)
 	for i := range host {
-		go func(ctx context.Context, resource string) {
+		go func(ctx context.Context, resource string, result chan string) {
 			req, err := http.NewRequest(http.MethodGet, resource, nil)
 			if err != nil {
 				return
@@ -45,8 +45,8 @@ func GetPublicIPAddr(host ...string) (addr string, err error) {
 			if ipaddr == "" {
 				return
 			}
-			ch <- ipaddr
-		}(ctx, host[i])
+			result <- ipaddr
+		}(ctx, host[i], ch)
 	}
 	select {
 	case info := <-ch:
