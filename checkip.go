@@ -50,7 +50,7 @@ func GetPublicIPAddr(host ...string) (addr string, err error) {
 	case info := <-ch:
 		cancel()
 		return info, err
-	case <-time.After(5 * time.Second):
+	case <-time.After(3 * time.Second):
 		cancel()
 		return "", fmt.Errorf("timeout")
 	}
