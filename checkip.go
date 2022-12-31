@@ -2,8 +2,12 @@ package ext
 
 // Get Public IP address
 import (
+	"context"
 	"fmt"
+	"io"
+	"net/http"
 	"regexp"
+	"time"
 )
 
 var (
@@ -12,25 +16,43 @@ var (
 	// orayCheckIPURI = "https://ddns.oray.com/checkip"
 )
 
-func HttpGetPublicIPAddr(reqURL string) (string, error) {
-	// 读取在线通用配置文件, 如果失败，使用代理尝试
-	b, err := HttpGet(reqURL)
-	if err != nil {
-		return "", err
-	}
+func GetPublicIPAddr(host ...string) (addr string, err error) {
+	client := &http.Client{Timeout: 3 * time.Second}
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ch := make(chan string)
+	for i := range host {
+		go func(ctx context.Context, reqURL string) {
+			req, err := http.NewRequest(http.MethodGet, reqURL, nil)
+			if err != nil {
+				return
+			}
+			resp, err := client.Do(req.WithContext(ctx))
+			if err != nil {
+				return
+			}
 
-	exp := regexp.MustCompile(`((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)`)
-	addr := exp.FindString(string(b))
-	if addr == "" {
-		return addr, fmt.Errorf("request %s, ip addr is not found", reqURL)
+			defer resp.Body.Close()
+			if resp.StatusCode != http.StatusOK {
+				return
+			}
+			buf, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return
+			}
+			exp := regexp.MustCompile(`((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)`)
+			ipaddr := exp.FindString(string(buf))
+			if ipaddr == "" {
+				return
+			}
+			ch <- ipaddr
+		}(ctx, host[i])
 	}
-
-	return addr, nil
-}
-
-func GetPublicIPAddr() (addr string, err error) {
-	if addr, err = HttpGetPublicIPAddr(akamaiCheckIPURI); err == nil {
-		return addr, err
+	select {
+	case info := <-ch:
+		cancel()
+		return info, err
+	case <-time.After(5 * time.Second):
+		cancel()
+		return "", fmt.Errorf("timeout")
 	}
-	return HttpGetPublicIPAddr(amazonCheckIPURI)
 }
