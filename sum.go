@@ -9,10 +9,6 @@ import (
 	"os"
 )
 
-func GenPassword(pwd string) string {
-	return MD5sum(SHA1sum(pwd))
-}
-
 func MD5sum(ctx string) string {
 	h := md5.New()
 	io.WriteString(h, ctx)
