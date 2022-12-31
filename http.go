@@ -3,83 +3,44 @@ package ext
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
-	"net"
 	"net/http"
-	"net/url"
 	"os"
-	"path"
 	"time"
 )
 
-var (
-	httpTimeout = 10 * time.Second
-)
-
-var httpClient = createHttpClient()
-
-func createHttpClient() *http.Client {
-	transport := &http.Transport{
-		MaxIdleConns: 10,
-		Dial: func(network, addr string) (net.Conn, error) {
-			deadline := time.Now().Add(httpTimeout)
-			c, err := net.DialTimeout(network, addr, httpTimeout)
-			if err != nil {
-				return nil, err
-			}
-			c.SetDeadline(deadline)
-			return c, nil
-		},
-		ResponseHeaderTimeout: httpTimeout,
+func HttpGet(reqURL string) ([]byte, error) {
+	client := &http.Client{Timeout: 5 * time.Second}
+	req, err := http.NewRequest(http.MethodGet, reqURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
 	}
 
-	client := &http.Client{
-		Transport: transport,
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("request %s, ststaus %s", reqURL, resp.Status)
 	}
 
-	return client
+	return io.ReadAll(resp.Body)
 }
 
-func HttpGetRaw(reqAddr string) (ctx []byte, err error) {
-	var (
-		response *http.Response
-	)
-	if _, err = url.Parse(reqAddr); err != nil {
-		return
+func HttpGetWithFile(reqURL, dst string) (err error) {
+	client := &http.Client{Timeout: 5 * time.Second}
+	req, err := http.NewRequest(http.MethodGet, reqURL, nil)
+	if err != nil {
+		return err
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
 	}
 
-	if response, err = httpClient.Get(reqAddr); err != nil {
-		return
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("HttpGetRaw URL(%v) bad status %v", reqAddr, response.Status)
-	}
-
-	ctx, err = ioutil.ReadAll(response.Body)
-	return
-}
-
-func HttpGetFile(reqAddr, dst string) (err error) {
-	var (
-		response *http.Response
-	)
-	if dst == "" {
-		dst = path.Base(reqAddr)
-	}
-
-	if _, err = url.Parse(reqAddr); err != nil {
-		return
-	}
-
-	if response, err = httpClient.Get(reqAddr); err != nil {
-		return
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("HttpGetFile URL(%v) bad status %v", reqAddr, response.Status)
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("request %s, ststaus %s", reqURL, resp.Status)
 	}
 
 	out, err := os.Create(dst)
@@ -88,7 +49,7 @@ func HttpGetFile(reqAddr, dst string) (err error) {
 	}
 	defer out.Close()
 
-	_, err = io.Copy(out, response.Body)
+	_, err = io.Copy(out, resp.Body)
 
 	return err
 }
