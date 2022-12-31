@@ -11,14 +11,15 @@ import (
 )
 
 var (
-	AkamaiCheckIPURL = "http://whatismyip.akamai.com/"
-	AmazonCheckIPURL = "https://checkip.amazonaws.com/"
-	OrayCheckIPURL   = "https://ddns.oray.com/checkip"
+	akamaiCheckIPURL = "http://whatismyip.akamai.com/"
+	amazonCheckIPURL = "https://checkip.amazonaws.com/"
+	orayCheckIPURL   = "https://ddns.oray.com/checkip"
 )
 
 func GetPublicIPAddr(host ...string) (addr string, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	ch := make(chan string)
+	host = append(host, akamaiCheckIPURL, amazonCheckIPURL)
 	for i := range host {
 		go func(ctx context.Context, reqURL string) {
 			req, err := http.NewRequest(http.MethodGet, reqURL, nil)
