@@ -31,7 +31,7 @@ func HttpGetWithDialer(reqURL string, dialer *http.Client) ([]byte, error) {
 
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("request %s, ststaus %s", reqURL, resp.Status)
+		return nil, fmt.Errorf("request %s, status %s", reqURL, resp.Status)
 	}
 
 	return io.ReadAll(resp.Body)
@@ -51,7 +51,7 @@ func HttpGet(reqURL string) ([]byte, error) {
 
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("request %s, ststaus %s", reqURL, resp.Status)
+		return nil, fmt.Errorf("request %s, status %s", reqURL, resp.Status)
 	}
 
 	return io.ReadAll(resp.Body)
@@ -71,7 +71,7 @@ func HttpGetWithFile(reqURL, dst string) (err error) {
 
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("request %s, ststaus %s", reqURL, resp.Status)
+		return fmt.Errorf("request %s, status %s", reqURL, resp.Status)
 	}
 
 	out, err := os.Create(dst)
