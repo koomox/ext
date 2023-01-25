@@ -94,7 +94,7 @@ func DeCompressFile(tarFile, suffix, dest string) error {
 	return errors.New("decompress failed")
 }
 
-func CompressWithBase64(b []byte) ([]byte, error) {
+func CompressToBase64(b []byte) ([]byte, error) {
 	enc := func(data []byte) (buf []byte, err error) {
 		var b bytes.Buffer
 		w := zlib.NewWriter(&b)
@@ -120,7 +120,7 @@ func CompressWithBase64(b []byte) ([]byte, error) {
 	return buf, nil
 }
 
-func DeCompressWithBase64(b []byte) ([]byte, error) {
+func DeCompressFromBase64(b []byte) ([]byte, error) {
 	dec := func(data []byte) (buf []byte, err error) {
 		var (
 			r      io.ReadCloser
