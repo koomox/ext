@@ -53,6 +53,7 @@ func DownloadWithDialer(resource, dst string, dialer *http.Client) (err error) {
 	}
 
 	defer resp.Body.Close()
+
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("request %s, status %s", resource, resp.Status)
 	}

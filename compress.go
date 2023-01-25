@@ -2,7 +2,10 @@ package ext
 
 import (
 	"archive/tar"
+	"bytes"
 	"compress/gzip"
+	"compress/zlib"
+	"encoding/base64"
 	"errors"
 	"io"
 	"os"
@@ -91,10 +94,57 @@ func DeCompressFile(tarFile, suffix, dest string) error {
 	return errors.New("decompress failed")
 }
 
-func MkdirAll(pa string) (err error) {
-	pa = strings.TrimSuffix(pa, "/")
-	if ok := IsExistsPath(pa); !ok {
-		return os.MkdirAll(pa, os.ModePerm)
+func CompressWithBase64(b []byte) ([]byte, error) {
+	enc := func(data []byte) (buf []byte, err error) {
+		var b bytes.Buffer
+		w := zlib.NewWriter(&b)
+		if _, err = w.Write(data); err != nil {
+			return
+		}
+		if err = w.Close(); err != nil {
+			return
+		}
+
+		buf = b.Bytes()
+		return
 	}
-	return nil
+
+	p, err := enc(b)
+	if err != nil {
+		return p, err
+	}
+
+	buf := make([]byte, base64.RawStdEncoding.EncodedLen(len(p)))
+	base64.RawStdEncoding.Encode(buf, p)
+
+	return buf, nil
+}
+
+func DeCompressWithBase64(b []byte) ([]byte, error) {
+	dec := func(data []byte) (buf []byte, err error) {
+		var (
+			r      io.ReadCloser
+			buffer bytes.Buffer
+		)
+		b := bytes.NewReader(data)
+		if r, err = zlib.NewReader(b); err != nil {
+			return
+		}
+		if _, err = io.Copy(&buffer, r); err != nil {
+			return
+		}
+		if err = r.Close(); err != nil {
+			return
+		}
+
+		buf = buffer.Bytes()
+		return
+	}
+
+	buf := make([]byte, base64.RawStdEncoding.DecodedLen(len(b)))
+	if _, err := base64.RawStdEncoding.Decode(buf, b); err != nil {
+		return nil, err
+	}
+
+	return dec(buf)
 }

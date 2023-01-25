@@ -34,3 +34,11 @@ func FromFile(reader Reader, name string) error {
 
 	return nil
 }
+
+func MkdirAll(pa string) (err error) {
+	pa = strings.TrimSuffix(pa, "/")
+	if ok := IsExistsPath(pa); !ok {
+		return os.MkdirAll(pa, os.ModePerm)
+	}
+	return nil
+}
